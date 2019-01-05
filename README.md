@@ -1,6 +1,6 @@
-# Latinize Georgian Chrome Extension
+# Latinize Georgian
 
-chrome browser extension converting characters from the Georgian alphabet to Latin characters
+Chrome browser extension converting characters from the Georgian alphabet to Latin characters
 
 It works automatically on all "* .ge" domains
 
