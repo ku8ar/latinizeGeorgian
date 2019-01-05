@@ -1,0 +1,15 @@
+{
+  "name": "Latinize Georgian",
+  "version": "0.0.2",
+  "description": "Change georgian letters to latin letters",
+  "permissions": [],
+  "icons": {
+      "128": "icon-128.png"
+  },
+  "content_scripts": [{
+      "matches": ["*://*.ge/*"],
+      "js": ["index.js"],
+      "run_at": "document_start"
+  }],
+  "manifest_version": 2
+}
