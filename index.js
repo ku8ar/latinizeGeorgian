@@ -3,7 +3,7 @@
 // - ge pages detection better than manifest domain (maybe by html lang attr)
 
 /* dict */
-const geo = {
+const geo = new Map(Object.entries({ // v8
   ა: 'a',
   ბ: 'b',
   გ: 'g',
@@ -42,10 +42,10 @@ const geo = {
   ჯ: 'j',
   ჰ: 'h',
   ჵ: 'h' // old
-}
+}))
 
-/* optimizations */
-function forEach(arr, func) {
+/* utils */
+function forEach(arr, func) { // faster version of fast.js
   let length = arr.length
   if (length === 0) return 0
   let i = 0
@@ -55,10 +55,25 @@ function forEach(arr, func) {
   }
 }
 
+/* parser */
+function latinizeText(text) {
+  let length = text.length
+  if (length === 0) return text
+  let latinText = ''
+  let n = 0
+  let tmp = undefined
+  while(n < length) {
+    tmp = text[n]
+    latinText += geo.get(tmp) || tmp
+    n++
+  }
+  return latinText
+}
+
 /* dom crawler */
 function getTextFromNode(n) {
   let result = []
-  if (!n) return result
+  if (n === undefined || n === null) return result
   n = n.firstChild
   while (n !== null) {
     if (n.nodeType === 3) { // 3 - text node
@@ -71,20 +86,8 @@ function getTextFromNode(n) {
   return result
 }
 
-function latinizeText(text) {
-  if (!text) return text
-  let latinText = ''
-  let n = 0
-  let length = text.length
-  while(n < length) {
-    latinText += geo[text[n]] || text[n]
-    n++
-  }
-  return latinText
-}
-
 function latinizeNode(el) {
-  el.textContent = latinizeText(el.textContent) // maybe in try/catch?
+  el.textContent = latinizeText(el.textContent)
 }
 
 function convertDomNode(el) {
@@ -93,12 +96,12 @@ function convertDomNode(el) {
 
 /* observer */
 function mutateRecord(mutationRecord) {
-  if (mutationRecord.addedNodes.length === 0) return 0
-  convertDomNode(mutationRecord.target)
+  forEach(mutationRecord.addedNodes, convertDomNode)
+  // convertDomNode(mutationRecord.target) // probably slower
 }
 
 function mutationWatcher(mutationsList) {
-  forEach(mutationsList, mutateRecord) // slow perf (too many mutations)
+  forEach(mutationsList, mutateRecord)
 }
 
 function initWatcher() {
