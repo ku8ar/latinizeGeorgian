@@ -50,8 +50,7 @@ function forEach(arr, func) { // faster version of fast.js
   if (length === 0) return 0
   let i = 0
   while(i < length) {
-    func(arr[i])
-    i++
+    func(arr[i++])
   }
 }
 
@@ -63,23 +62,22 @@ function latinizeText(text) {
   let n = 0
   let tmp = undefined
   while(n < length) {
-    tmp = text[n]
+    tmp = text[n++]
     latinText += geo.get(tmp) || tmp
-    n++
   }
   return latinText
 }
 
 /* dom crawler */
-function getTextFromNode(n) {
+function getTextNodes(n) {
   let result = []
-  if (n === undefined || n === null) return result
+  if (n === undefined) return result
   n = n.firstChild
   while (n !== null) {
     if (n.nodeType === 3) { // 3 - text node
       result.push(n)
     } else {
-      result = result.concat(getTextFromNode(n)) // slow perf (without tail call opt.)
+      result = result.concat(getTextNodes(n)) // slow perf (without tail call opt.)
     }
     n = n.nextSibling
   }
@@ -91,13 +89,13 @@ function latinizeNode(el) {
 }
 
 function convertDomNode(el) {
-  forEach(getTextFromNode(el), latinizeNode)
+  forEach(getTextNodes(el), latinizeNode)
 }
 
 /* observer */
 function mutateRecord(mutationRecord) {
   forEach(mutationRecord.addedNodes, convertDomNode)
-  // convertDomNode(mutationRecord.target) // probably slower
+  // convertDomNode(mutationRecord.target) // slower but more accurate
 }
 
 function mutationWatcher(mutationsList) {
