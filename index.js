@@ -1,7 +1,3 @@
-// @todo
-// - move parts to sep files and add script to build entire content
-// - ge pages detection better than manifest domain (maybe by html lang attr)
-
 /* dict */
 const geo = new Map(Object.entries({ // v8
   ა: 'a',
